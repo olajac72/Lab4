@@ -2,28 +2,50 @@
 //
 
 #include "CardDeck.h"
+using std::cout;
+using namespace std::chrono;
 
 int main()
 {
 	CardDeck cd;
 	CardUtilities cu;
-
+	CardGame cg;
+/*
 	cd.print();
 	cu.shuffle(&cd);
 	cd.print();
 	cu.sort(&cd);
 	cd.print();
+*/
+	for (int i = 0; i < 10; i++)
+	{
+		cg.play();
+	}
+
 }
 
 CardDeck::CardDeck()
 {
+	FillDeckWithCards();
+}
+
+void CardDeck::NewDeck()
+{
+	FillDeckWithCards();
+}
+
+void CardDeck::FillDeckWithCards()
+{
 	int n = 0;
+	deckOfCards.clear();
+
 	for (int i = 1; i < 5; i++)
 	{
 		for (int j = 2; j < 15; j++)
 		{
 			Card add = Card(static_cast<rank_type>(j), static_cast<suit_type>(i), n);
 			deckOfCards.push_back(add);
+
 			n++;
 		}
 	}
@@ -41,6 +63,79 @@ Card::Card(rank_type rank, suit_type suit, int position) : rank(rank), suit(suit
 
 }
 
+CardGame::CardGame()
+{
+
+}
+
+void CardGame::play()
+{
+	CardUtilities cu;
+	CardDeck cd;
+
+	cd.deckOfCards.clear();
+	
+	cardDeck.NewDeck();
+
+	cu.shuffle(&cardDeck);
+	
+	time_point<system_clock> now = system_clock::now();
+
+	auto epoch = now.time_since_epoch();
+	auto value = duration_cast<std::chrono::microseconds>(epoch);
+	unsigned duration = value.count();
+	srand(duration);
+
+	int card1 = rand() % 55;
+
+	cd.deckOfCards.push_back(cardDeck.deckOfCards[card1]);
+	cardDeck.deckOfCards.erase(cardDeck.deckOfCards.begin() + card1);
+
+	int card2 = rand() % 54;
+
+	cd.deckOfCards.push_back(cardDeck.deckOfCards[card2]);
+	cardDeck.deckOfCards.erase(cardDeck.deckOfCards.begin() + card2);
+
+	cd.print();
+
+	if (cd.deckOfCards[0].rank == rank_type::Joker && cd.deckOfCards[1].rank == rank_type::Joker)
+	{
+		cout << "Thats a tie" << endl;
+	}
+	else if (cd.deckOfCards[0].rank == rank_type::Joker)
+	{
+		cout << "Computer wins" << endl;
+	}
+	else if (cd.deckOfCards[1].rank == rank_type::Joker)
+	{
+		cout << "Player wins" << endl;
+	}
+	else
+	{
+		if (cd.deckOfCards[0].rank == cd.deckOfCards[1].rank)
+		{
+			if (cd.deckOfCards[0].suit > cd.deckOfCards[1].suit)
+			{
+				cout << "Computer wins" << endl;
+			}
+			else
+			{
+				cout << "Player wins" << endl;
+			}
+		}
+		else
+		{
+			if (cd.deckOfCards[0].rank > cd.deckOfCards[1].rank)
+			{
+				cout << "Computer wins" << endl;
+			}
+			else
+			{
+				cout << "Player wins" << endl;
+			}
+		}
+	}
+}
 
 void CardDeck::print()
 {
@@ -128,6 +223,8 @@ void CardUtilities::shuffle(CardDeck* cardDeck)
 		cardDeck->deckOfCards[i] = card;
 	}
 }
+
+
 
 void CardUtilities::sort(CardDeck* cardDeck)
 {

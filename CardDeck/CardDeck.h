@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <chrono>
 
 using namespace std;
 enum class rank_type
@@ -29,11 +30,12 @@ public:
 class CardDeck
 {
 private:
-
+	void FillDeckWithCards();
 public:
 	vector<Card> deckOfCards;
 	CardDeck();
 	void print();
+	void NewDeck();
 };
 
 class CardUtilities
@@ -44,4 +46,13 @@ public:
 	void shuffle(CardDeck* cardDeck);
 	void sort(CardDeck* cardDeck);
 	Card* checkMissing(const CardDeck* cardDeck);
+};
+
+class CardGame
+{
+public:
+	vector<Card> drawnCards;
+	CardDeck cardDeck;
+	CardGame();
+	void play();
 };
