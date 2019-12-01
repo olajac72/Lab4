@@ -12,15 +12,23 @@ int main()
 
 	PolyLine pl;
 
-	pl.Add(1, 2);
+	pl.Add(0, 0);
 	pl.Add(3, 4);
 	pl.print();
+	cout << pl.length() << endl;
+
+	pl.Add(6, 0);
+	pl.print();
+	cout << pl.length() << endl;
+
+/*
 	pl.Remove();
 	pl.Add(5, 6);
 	pl.print();
 	pl.Remove();
 	pl.Remove();
 	pl.print();
+*/
 /*
 	dist = p1.Distance(p2);
 	cout << "Distance:" << dist << endl;
@@ -50,23 +58,28 @@ int main()
 
 Point2D::Point2D(int x, int y) : x(x), y(y)
 {
-
+	next2dp = NULL;
+	prev2dp = NULL;
 }
 
 Point2D::Point2D()
 {
 	x = 0;
 	y = 0;
+	next2dp = NULL;
+	prev2dp = NULL;
 }
 
 Point2D::Point2D(const Point2D& p2d) // copy constructor
 {
 	x = p2d.x;
 	y = p2d.y;
+	next2dp = p2d.next2dp;
+	prev2dp = p2d.prev2dp;
 }
-float Point2D::Distance(Point2D p2d)
+float Point2D::Distance(Point2D *p2d)
 {
-	return (sqrt(pow(p2d.x, 2) + pow(p2d.y, 2)));
+	return (sqrt(pow((x - p2d->x), 2) + pow((y - p2d->y), 2)));
 }
 string Point2D::toString()
 {
@@ -100,13 +113,39 @@ Point2D& Point2D::operator=(const Point2D& p2d)
 	return *this;
 }
 
+float PolyLine::length()
+{
+	Point2D* tempPointLast = NULL;
+	Point2D* tempPointPrev = NULL;
+	float length = 0.0;
+
+	if (numberOfElements != 0 && numberOfElements != 1)
+	{
+		tempPointLast = firstPoint2DElement;
+		tempPointPrev = tempPointLast;
+		tempPointLast = tempPointLast->next2dp;
+
+		do
+		{
+			length += tempPointLast->Distance(tempPointPrev);
+			tempPointPrev = tempPointLast;
+			if (tempPointLast->next2dp != NULL)
+			{
+				tempPointLast = tempPointLast->next2dp;
+			}
+		} while (tempPointPrev->next2dp != NULL);
+
+		return length;
+	}
+	return 0.0;
+}
+
 PolyLine::PolyLine()
 {
 	numberOfElements = 0;
 	firstPoint2DElement = NULL;
 	lastPoint2DElement = NULL;
 	newPoint2d = NULL;
-
 }
 
 void PolyLine::print()
